@@ -64,6 +64,16 @@ document.addEventListener(
   true
 );
 
+document.addEventListener("keydown", (event) => {
+  if (event.ctrlKey && event.key === "b") {
+    chrome.storage.local.set({ "Auto Refresh": false }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("Error saving state", chrome.runtime.lastError);
+      }
+    });
+  }
+});
+
 document.body.style = "";
 
 const floatingButton = document.createElement("button");
