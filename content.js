@@ -161,7 +161,7 @@ const createToggle = (optionKey) => {
   return container;
 };
 
-const labels = ["Auto Answer", "Auto Next Question"];
+const labels = ["Auto Answer", "Auto Next Question", "Auto Refresh"];
 labels.forEach((label) => {
   chrome.storage.local.get([label], (result) => {
     if (!(label in result)) {
@@ -268,6 +268,12 @@ chrome.storage.local.get("ANSWERS", ({ ANSWERS }) => {
 
         return;
       }
+
+      chrome.storage.local.get("Auto Refresh", (result) => {
+        if (result["Auto Refresh"]) {
+          window.location.reload();
+        }
+      });
 
       const TEMPLATE = `Podaj prawidłową odpowiedź na to pytanie:
 Pytanie: ${question}
