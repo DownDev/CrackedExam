@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "[BETA] CrackedExam",
+  "description": "Injects code to bypass security features.",
+  "version": "1.2",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "background": {
+    "service_worker": "storage.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.zawodowy.edu.pl/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
