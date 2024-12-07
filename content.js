@@ -185,6 +185,81 @@ labels.forEach((option) => {
   popupMenu.appendChild(createToggle(option));
 });
 
+const createSlider = () => {
+  const container = document.createElement("div");
+  container.style.marginTop = "20px";
+  container.style.paddingTop = "10px";
+  container.style.borderTop = "1px solid #ddd";
+  container.style.fontSize = "16px";
+  container.style.color = "#333";
+
+  const label = document.createElement("label");
+  label.textContent = "Wait Time (0-20s):";
+  label.style.display = "block";
+  label.style.marginBottom = "8px";
+
+  const sliderWrapper = document.createElement("div");
+  sliderWrapper.style.display = "flex";
+  sliderWrapper.style.alignItems = "center";
+  sliderWrapper.style.gap = "10px";
+
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = "0";
+  slider.max = "20";
+  slider.style.width = "70%";
+  slider.style.cursor = "pointer";
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "0";
+  input.max = "20";
+  input.style.width = "50px";
+  input.style.textAlign = "center";
+  input.style.border = "1px solid #ddd";
+  input.style.borderRadius = "4px";
+  input.style.padding = "4px";
+
+  chrome.storage.local.get(["sliderValue"], (result) => {
+    const value = result.sliderValue || 0;
+    slider.value = value;
+    input.value = value;
+  });
+
+  slider.addEventListener("input", () => {
+    const value = slider.value;
+    input.value = value;
+    chrome.storage.local.set({ sliderValue: parseInt(value, 10) }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("Error saving slider value", chrome.runtime.lastError);
+      }
+    });
+  });
+
+  input.addEventListener("input", () => {
+    let value = parseInt(input.value, 10);
+    if (value >= 0 && value <= 20) {
+      slider.value = value;
+      chrome.storage.local.set({ sliderValue: value }, () => {
+        if (chrome.runtime.lastError) {
+          console.error("Error saving slider value", chrome.runtime.lastError);
+        }
+      });
+    } else if (value < 0 || value > 20) {
+      input.value = slider.value;
+    }
+  });
+
+  sliderWrapper.appendChild(slider);
+  sliderWrapper.appendChild(input);
+  container.appendChild(label);
+  container.appendChild(sliderWrapper);
+
+  return container;
+};
+
+popupMenu.appendChild(createSlider());
+
 chrome.storage.local.get("ANSWERS", ({ ANSWERS }) => {
   const paragraphContainer = document.createElement("div");
   paragraphContainer.style.marginTop = "20px";
@@ -257,11 +332,13 @@ chrome.storage.local.get("ANSWERS", ({ ANSWERS }) => {
         if (label.textContent.trim() === foundAnswer.answer) {
           label.style.border = "4px solid LawnGreen";
 
-          chrome.storage.local.get("Auto Answer", (result) => {
+          chrome.storage.local.get(null, (result) => {
             if (result["Auto Answer"]) {
-              label.click();
-              const submit = document.querySelector("#submit-button");
-              submit.click();
+              setTimeout(() => {
+                label.click();
+                const submit = document.querySelector("#submit-button");
+                submit.click();
+              }, result.sliderValue * 1000);
             }
           });
         }
