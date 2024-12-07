@@ -26,11 +26,7 @@ window.addEventListener(
   true
 );
 
-const html = document.documentElement;
-const newHtml = html.cloneNode(true);
-const newBody = newHtml.querySelector("body");
-
-html.parentNode.replaceChild(newHtml, html);
+for (var i = 1; i < 99999; i++) window.clearInterval(i);
 
 const originalPreventDefault = Event.prototype.preventDefault;
 Event.prototype.preventDefault = function () {
