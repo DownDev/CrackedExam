@@ -26,7 +26,8 @@ window.addEventListener(
   true
 );
 
-for (var i = 1; i < 99999; i++) window.clearInterval(i);
+const id = setInterval(() => {}, 1000);
+for (var i = 1; i < id; i++) window.clearInterval(i);
 
 const originalPreventDefault = Event.prototype.preventDefault;
 Event.prototype.preventDefault = function () {
